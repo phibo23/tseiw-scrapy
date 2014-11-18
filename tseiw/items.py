@@ -16,6 +16,10 @@ class TseiwItem(scrapy.Item):
     link = scrapy.Field()
     movie = scrapy.Field()
     threeD = scrapy.Field()
+    hfr = scrapy.Field()
+    imax = scrapy.Field()
+    omu = scrapy.Field()
+    fourK = scrapy.Field()
     
 class CinemaItem(scrapy.Item):
 	name = scrapy.Field()
@@ -31,3 +35,4 @@ class MovieItem(scrapy.Item):
 	titleRaw = scrapy.Field()
 	title = scrapy.Field()
 	imdbId = scrapy.Field()
+	language = scrapy.Field()

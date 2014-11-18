@@ -28,17 +28,25 @@ class KAFilmpalastZKMSpider(scrapy.Spider):
         cinema['homepage'] = "http://www.filmpalast.net/"
 
         for movierow in response.css('article.film'):
-        	movie = MovieItem()
-        	movie['titleRaw'] = movierow.css('div > a > header > h3.gwfilmdb-film-title').xpath('text()').extract()[0]
-           	for screening in movierow.css('div.tab-content div.release-type-hdov table.programm-table tbody td.slot-future' 
-           		', div.tab-content div.release-type-imaxov  table.programm-table tbody td.slot-future'
-           		', div.tab-content div.release-type-3dov  table.programm-table tbody td.slot-future'
-           		', div.tab-content div.release-type-imax3dov  table.programm-table tbody td.slot-future'):
-	       		datetime = screening.css('div.modal-header h4.modal-title span').xpath('text()').extract()[0]
-           		link = screening.css('a.performance-popover').xpath('@href').extract()[0]
-           		item = TseiwItem()
-           		item['datetime'] = datetime
-           		item['movie'] = dict(movie)
-           		item['link'] = link 
-           		item['cinema'] = dict(cinema)
-           		yield item
+          movie = MovieItem()
+          movie['titleRaw'] = movierow.css('div > a > header > h3.gwfilmdb-film-title').xpath('text()').extract()[0]
+          for screening in movierow.css('div.tab-content div.release-type-hdov table.programm-table tbody td.slot-future' 
+            ', div.tab-content div.release-type-imaxov  table.programm-table tbody td.slot-future'
+            ', div.tab-content div.release-type-3dov  table.programm-table tbody td.slot-future'
+            ', div.tab-content div.release-type-imax3dov  table.programm-table tbody td.slot-future'):
+            datetime = screening.css('div.modal-header h4.modal-title span').xpath('text()').extract()[0]
+            features = screening.xpath('../../../../@class').extract()[0]
+            link = screening.css('a.performance-popover').xpath('@href').extract()[0]
+            item = TseiwItem()
+            if 'release-type-imax3dov' in features:
+              item['threeD'] = True
+              item['imax'] = True
+            elif 'release-type-3dov' in features:
+              item['threeD'] = True
+            elif 'release-type-imaxov' in features:
+              item['imax'] = True
+            item['datetime'] = datetime
+            item['movie'] = dict(movie)
+            item['link'] = link 
+            item['cinema'] = dict(cinema)
+            yield item

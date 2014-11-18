@@ -7,6 +7,7 @@
 import locale
 from datetime import datetime
 from tseiw.spiders.ka_filmpalastzkm_spider import KAFilmpalastZKMSpider
+from tseiw.spiders.ka_schauburg_spider import KASchauburgSpider
 
 class TseiwPipeline(object):
     def process_item(self, item, spider):
@@ -22,6 +23,15 @@ class DateTimePipeline(object):
 				year = (parsedDateTime.month>=now.month) and now.year or now.year+1
 				parsedDateTime = parsedDateTime.replace(year=year)
 				item['datetime'] = parsedDateTime.isoformat()
+		if isinstance(spider, KASchauburgSpider):
+			if item['datetime']:
+				locale.setlocale(locale.LC_TIME,"de_DE")
+				parsedDateTime = datetime.strptime(item['datetime'],'%d.%m. %H.%M')
+				now = datetime.now()
+				year = (parsedDateTime.month>=now.month) and now.year or now.year+1
+				parsedDateTime = parsedDateTime.replace(year=year)
+				item['datetime'] = parsedDateTime.isoformat()
+
 		return item
 
 class MovieDetailsPipeline(object):
